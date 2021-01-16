@@ -1,6 +1,8 @@
-package linearDataStructures;
+package linearDataStructuresTests;
 
 import java.util.Arrays;
+
+import linearDataStructures.DoublyLinkedList;
 
 public class DoublyLinkedListClient {
 	public static void main(String[] args) {
