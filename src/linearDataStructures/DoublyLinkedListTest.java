@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
@@ -66,6 +67,22 @@ class DoublyLinkedListTest {
 	}
 
 	@Test
+	void testAddIndex() {
+		DoublyLinkedList<String> list = new DoublyLinkedList<String>();
+		LinkedList<String> javaList = new LinkedList<String>();
+		Random r = new Random();
+		for (int i = 0; i < 100; i++) {
+			int index = r.nextInt(i + 1);
+			list.add(index, "" + i);
+			javaList.add(index, "" + i);
+		}
+
+		for (int i = 0; i < 100; i++) {
+			assertEquals(javaList.get(i), list.get(i));
+		}
+	}
+
+	@Test
 	void testContains() {
 		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
 		ArrayList<Integer> supplementaryList = new ArrayList<Integer>();
@@ -100,7 +117,6 @@ class DoublyLinkedListTest {
 			assertEquals(javaList.get(i), list.get(i));
 		}
 	}
-
 
 	@Test
 	void testRemoveObject1() {
@@ -388,4 +404,60 @@ class DoublyLinkedListTest {
 		}
 	}
 
+	@Test
+	void testIndexOf() {
+		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
+		LinkedList<Integer> javaList = new LinkedList<Integer>();
+		Random r = new Random();
+		for (int i = 0; i < 1000; i++) {
+			int num = r.nextInt(100);
+			list.add(num);
+			javaList.add(num);
+		}
+		for (int i = 0; i < 100; i++) {
+			int randomIndex = r.nextInt(1000);
+			assertEquals(javaList.indexOf(javaList.get(randomIndex)), list.indexOf(list.get(randomIndex)));
+		}
+		assertEquals(javaList.indexOf(1000), list.indexOf(1000));
+	}
+
+	@Test
+	void testLastIndexOf() {
+		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
+		LinkedList<Integer> javaList = new LinkedList<Integer>();
+		Random r = new Random();
+		for (int i = 0; i < 1000; i++) {
+			int num = r.nextInt(100);
+			list.add(num);
+			javaList.add(num);
+		}
+		for (int i = 0; i < 100; i++) {
+			int randomIndex = r.nextInt(1000);
+			assertEquals(javaList.lastIndexOf(javaList.get(randomIndex)), list.lastIndexOf(list.get(randomIndex)));
+		}
+		assertEquals(javaList.lastIndexOf(1000), list.lastIndexOf(1000));
+	}
+
+	@Test
+	void testSubList() {
+		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
+		LinkedList<Integer> javaList = new LinkedList<Integer>();
+		Random r = new Random();
+		for (int i = 0; i < 1000; i++) {
+			int num = r.nextInt(100);
+			list.add(num);
+			javaList.add(num);
+		}
+
+		int fromIndex = r.nextInt(500);
+		int toIndex = 500 + r.nextInt(500);
+
+		DoublyLinkedList<Integer> subList = (DoublyLinkedList<Integer>) list.subList(fromIndex, toIndex);
+		List<Integer> javaSubList = javaList.subList(fromIndex, toIndex);
+
+		for (int i = 0; i < toIndex - fromIndex; i++) {
+			assertEquals(subList.get(i), javaSubList.get(i));
+		}
+	}
 }
+

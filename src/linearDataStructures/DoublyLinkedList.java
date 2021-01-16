@@ -255,7 +255,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object set(int index, Object element) {
+	public Object set(int index, Object element) { // tested
 		if (index >= this.size()) {
 			throw new ArrayIndexOutOfBoundsException();
 		}
@@ -274,18 +274,31 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(int index, Object element) {
-		int currentIndex = -1;
+	public void add(int index, Object element) { // tested
+		if (this.isEmpty()) {
+			this.head = new Node<T>((T) element, null, null);
+			return;
+		}
+
+		int currentIndex = 0;
 		Node<T> previousNode = null;
-		Node<T> currentNode = head;
-		ListIterator<T> iterator = this.listIterator();
-		while (iterator.hasNext() && currentIndex < index) {
-			iterator.next();
+		Node<T> currentNode = this.head;
+		while (currentNode != null && currentIndex < index) {
 			previousNode = currentNode;
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
-		previousNode.setNextNode(new Node<T>((T) element, previousNode, currentNode));
+		Node<T> newNode = new Node<T>((T) element, previousNode, currentNode);
+
+		if (previousNode == null && currentNode != null) { // adding to head
+			head = newNode;
+			currentNode.setPreviousNode(newNode);
+		} else if (previousNode != null && currentNode == null) { // adding to tail
+			previousNode.setNextNode(newNode);
+		} else if (previousNode != null && currentNode != null) { // adding to middle
+			currentNode.setPreviousNode(newNode);
+			previousNode.setNextNode(newNode);
+		}
 	}
 
 	@Override
@@ -318,7 +331,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public int indexOf(Object o) {
+	public int indexOf(Object o) { // tested
 		int currentIndex = -1;
 		ListIterator<T> iterator = this.listIterator();
 		while (iterator.hasNext()) {
@@ -332,7 +345,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public int lastIndexOf(Object o) {
+	public int lastIndexOf(Object o) { // tested
 		int currentIndex = -1;
 		int maxIndex = -1;
 		ListIterator<T> iterator = this.listIterator();
@@ -364,18 +377,18 @@ public class DoublyLinkedList<T> implements List<T> {
 	}
 
 	@Override
-	public List<T> subList(int fromIndex, int toIndex) {
-		int currentIndex = -1;
+	public List<T> subList(int fromIndex, int toIndex) { // tested
+		int currentIndex = 0;
 		Node<T> currentNode = head;
-		ListIterator<T> iterator = this.listIterator();
 		while (currentIndex < fromIndex) {
-			iterator.next();
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
-		DoublyLinkedList<T> subList = new DoublyLinkedList<T>();
-		for (int i = currentIndex; i < toIndex; i++) {
-			subList.add(iterator.next());
+		DoublyLinkedList<T> subList = new DoublyLinkedList<T>(currentNode.getData());
+		while (currentIndex < toIndex - 1) {
+			currentIndex++;
+			currentNode = currentNode.getNextNode();
+			subList.add(currentNode.getData());
 		}
 		return subList;
 	}
