@@ -385,8 +385,9 @@ public class LinkedList<T> implements List<T> {
 
 		@Override
 		public K previous() {
-			// TODO Auto-generated method stub
-			return null;
+			if (hasPrevious()) {
+				currentNode
+			}
 		}
 
 		@Override
