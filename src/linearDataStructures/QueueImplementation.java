@@ -11,6 +11,7 @@ public class QueueImplementation<T> implements Queue<T> {
 
 	public QueueImplementation() {
 		this.queue = new DoublyLinkedList<T>();
+		this.maxSize = Integer.MAX_VALUE;
 	}
 
 	public QueueImplementation(int maxSize) {
