@@ -1,6 +1,8 @@
 package linearDataStructures;
 
-public class Tuple<K, V> {
+import java.util.Map.Entry;
+
+public class Tuple<K, V> implements Entry<K, V> {
 	private K key;
 	private V value;
 
@@ -15,5 +17,12 @@ public class Tuple<K, V> {
 
 	public V getValue() {
 		return this.value;
+	}
+
+	@Override
+	public V setValue(V value) {
+		V oldValue = this.value;
+		this.value = value;
+		return oldValue;
 	}
 }
