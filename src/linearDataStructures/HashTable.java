@@ -12,6 +12,9 @@ public class HashTable<K, V> implements Map<K, V> {
 	private DoublyLinkedList<Tuple<K, V>>[] hashTable = hashTable = new DoublyLinkedList[2048];
 	private int numValues = 0;
 	private double loadingFactor = 0.75;
+	private Set<K> keys = new HashSet<K>();
+	private Collection<V> values = new HashSet<V>();
+	private Set<Entry<K, V>> map = new HashSet<Entry<K, V>>();
 
 	public HashTable() {
 	}
@@ -57,6 +60,15 @@ public class HashTable<K, V> implements Map<K, V> {
 
 	private double calculateLoadingFactor() {
 		return (this.numValues / 1.0) / (this.size() / 1.0);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void updateMap() {
+		Object[] keys = this.keys.toArray();
+		for (int i = 0; i < keys.length; i++) {
+			K key = (K) keys[i];
+			map.add(new Tuple<K, V>(key, this.get(key)));
+		}
 	}
 
 	@Override
@@ -116,12 +128,17 @@ public class HashTable<K, V> implements Map<K, V> {
 			Tuple<K, V> keyValuePair = listIterator.next();
 			if (keyValuePair.getKey().equals(key)) {
 				listIterator.set(new Tuple<K, V>(key, value));
+				this.values.remove(keyValuePair.getValue());
+				this.values.add(value);
 				return keyValuePair.getValue();
 			}
 		}
 		listIterator.add(new Tuple<K, V>(key, value));
+		this.keys.add(key);
+		this.values.add(value);
 		this.numValues++;
 		this.resize();
+		this.updateMap();
 		return null;
 	}
 
@@ -135,7 +152,10 @@ public class HashTable<K, V> implements Map<K, V> {
 			Tuple<K, V> keyValuePair = listIterator.next();
 			if (keyValuePair.getKey().equals(key)) {
 				listIterator.remove();
+				this.keys.remove(keyValuePair.getKey());
+				this.values.remove(keyValuePair.getValue());
 				this.numValues--;
+				this.updateMap();
 				return keyValuePair.getValue();
 			}
 		}
@@ -162,21 +182,17 @@ public class HashTable<K, V> implements Map<K, V> {
 
 	@Override
 	public Set<K> keySet() {
-		Set<K> keys = new HashSet<K>();
-		return null;
+		return this.keys;
 	}
 
 	@Override
 	public Collection<V> values() {
-		Collection<V> values = new HashSet<V>();
-
-		return null;
+		return this.values;
 	}
 
 	@Override
 	public Set<Entry<K, V>> entrySet() {
-		HashSet<Tuple<K, V>> map = new HashSet<Tuple<K, V>>();
-		return null;
+		return this.map;
 	}
 
 }
