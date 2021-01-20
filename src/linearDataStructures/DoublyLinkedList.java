@@ -505,10 +505,19 @@ public class DoublyLinkedList<T> implements List<T> {
 
 		@Override
 		public void add(K e) {
-			if (operationCalled == 0) {
-				return;
-			}
 			Node<K> newNode = new Node<K>(e, currentPreviousNode, currentNextNode);
+			if (currentPreviousNode == null && currentNextNode == null) { // creating new list
+				currentPreviousNode = newNode;
+				System.out.println("Here");
+			} else if (currentPreviousNode == null && currentNextNode != null) { // adding to head
+				currentNextNode.setPreviousNode(newNode);
+			} else if (currentPreviousNode != null && currentNextNode == null) { // adding to tail
+				currentPreviousNode.setNextNode(newNode);
+				System.out.println("Now Here");
+			} else if (currentPreviousNode != null && currentNextNode != null) { // adding to middle
+				currentNextNode.setPreviousNode(newNode);
+				currentPreviousNode.setNextNode(newNode);
+			}
 			currentPreviousNode = newNode;
 			currentPreviousIndex++;
 			operationCalled = 0;

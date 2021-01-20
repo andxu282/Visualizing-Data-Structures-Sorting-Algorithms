@@ -25,4 +25,8 @@ public class Tuple<K, V> implements Entry<K, V> {
 		this.value = value;
 		return oldValue;
 	}
+
+	public int hashCode() {
+		return key.hashCode() + value.hashCode();
+	}
 }

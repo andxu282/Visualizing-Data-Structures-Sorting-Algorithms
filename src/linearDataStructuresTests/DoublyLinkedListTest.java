@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
@@ -459,6 +460,43 @@ class DoublyLinkedListTest {
 
 		for (int i = 0; i < toIndex - fromIndex; i++) {
 			assertEquals(subList.get(i), javaSubList.get(i));
+		}
+	}
+
+	@Test
+	void testListIterator() {
+		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
+		LinkedList<Integer> javaList = new LinkedList<Integer>();
+		Random r = new Random();
+		for (int i = 0; i < 1000; i++) {
+			int num = r.nextInt(100);
+			list.add(num);
+			javaList.add(num);
+		}
+
+		ListIterator<Integer> listIterator = list.listIterator();
+		ListIterator<Integer> javaListIterator = javaList.listIterator();
+
+		while (javaListIterator.hasNext()) {
+			assertEquals(javaListIterator.next(), listIterator.next());
+		}
+	}
+
+	@Test
+	void testListIterator1() {
+		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
+		LinkedList<Integer> javaList = new LinkedList<Integer>();
+		Random r = new Random();
+		ListIterator<Integer> listIterator = list.listIterator();
+		ListIterator<Integer> javaListIterator = javaList.listIterator();
+		for (int i = 0; i < 1000; i++) {
+			int num = r.nextInt(100);
+			listIterator.add(num);
+			javaListIterator.add(num);
+		}
+
+		for (int i = 0; i < 1000; i++) {
+			assertEquals(javaList.get(i), list.get(i));
 		}
 	}
 }
