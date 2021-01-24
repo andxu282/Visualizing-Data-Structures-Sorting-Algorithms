@@ -18,10 +18,10 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@Override
 	public int size() { // tested
-		ListIterator<T> iterator = this.listIterator();
+		Node<T> currentNode = this.head;
 		int size = 0;
-		while (iterator.hasNext()) {
-			iterator.next();
+		while (currentNode != null) {
+			currentNode = currentNode.getNextNode();
 			size++;
 		}
 		return size;
@@ -52,11 +52,12 @@ public class DoublyLinkedList<T> implements List<T> {
 	@Override
 	public Object[] toArray() { // tested
 		Object[] listToArray = new Object[this.size()];
-		ListIterator<T> iterator = this.listIterator();
-		int index = -1;
-		while (iterator.hasNext()) {
+		Node<T> currentNode = this.head;
+		int index = 0;
+		while (currentNode != null) {
+			listToArray[index] = currentNode.getData();
 			index++;
-			listToArray[index] = iterator.next();
+			currentNode = currentNode.getNextNode();
 		}
 		return listToArray;
 	}
@@ -243,14 +244,14 @@ public class DoublyLinkedList<T> implements List<T> {
 			throw new ArrayIndexOutOfBoundsException();
 		}
 
-		int currentIndex = -1;
-		ListIterator<T> iterator = this.listIterator();
-		while (currentIndex < index - 1) {
-			iterator.next();
+		int currentIndex = 0;
+		Node<T> currentNode = this.head;
+		while (currentIndex < index) {
+			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
 
-		return iterator.next();
+		return currentNode.getData();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -360,20 +361,31 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@Override
 	public ListIterator<T> listIterator() {
-		return new LinkedListIterator<T>(this.head);
+		LinkedListIterator<T> listIterator;
+		if (this.head == null) {
+			listIterator = new LinkedListIterator<T>();
+			this.head = listIterator.headOfIterator;
+		} else {
+			listIterator = new LinkedListIterator<T>(this.head, this.head);
+			this.head = listIterator.headOfIterator;
+		}
+		return listIterator;
 	}
 
 	@Override
 	public ListIterator<T> listIterator(int index) {
-		int currentIndex = -1;
+		if (index == 0) {
+			return this.listIterator();
+		}
+		int currentIndex = 0;
 		Node<T> currentNode = head;
-		ListIterator<T> iterator = this.listIterator();
 		while (currentIndex < index) {
-			iterator.next();
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
-		return new LinkedListIterator<T>(currentNode);
+
+		LinkedListIterator<T> listIterator = new LinkedListIterator<T>(this.head, currentNode);
+		return listIterator;
 	}
 
 	@Override
@@ -397,6 +409,12 @@ public class DoublyLinkedList<T> implements List<T> {
 		private K data;
 		private Node<K> previous;
 		private Node<K> next;
+		
+		Node() {
+			this.data = null;
+			this.previous = null;
+			this.next = null;
+		}
 
 		Node(K data, Node<K> previous, Node<K> next) {
 			this.data = data;
@@ -436,9 +454,19 @@ public class DoublyLinkedList<T> implements List<T> {
 		int currentNextIndex = 0;
 		Node<K> currentPreviousNode;
 		Node<K> currentNextNode;
+		Node<K> headOfIterator;
 
-		LinkedListIterator(Node<K> node) {
-			currentPreviousNode = null;
+		LinkedListIterator() {
+			headOfIterator = new Node<K>();
+		}
+
+		LinkedListIterator(Node<K> head, Node<K> node) {
+			if (head == null) {
+				headOfIterator = new Node<K>();
+			} else {
+				headOfIterator = head;
+			}
+			currentPreviousNode = node.getPreviousNode();
 			currentNextNode = node;
 		}
 
@@ -507,18 +535,23 @@ public class DoublyLinkedList<T> implements List<T> {
 		public void add(K e) {
 			Node<K> newNode = new Node<K>(e, currentPreviousNode, currentNextNode);
 			if (currentPreviousNode == null && currentNextNode == null) { // creating new list
-				currentPreviousNode = newNode;
-				System.out.println("Here");
+				this.headOfIterator.setData(e);
+				currentPreviousNode = this.headOfIterator;
 			} else if (currentPreviousNode == null && currentNextNode != null) { // adding to head
-				currentNextNode.setPreviousNode(newNode);
+				Node<K> afterHead = new Node<K>(this.headOfIterator.getData(), currentNextNode,
+						this.headOfIterator.getNextNode());
+				this.headOfIterator.setNextNode(afterHead);
+				this.headOfIterator.setData(e);
+				currentNextNode = afterHead;
+				currentPreviousNode = this.headOfIterator;
 			} else if (currentPreviousNode != null && currentNextNode == null) { // adding to tail
 				currentPreviousNode.setNextNode(newNode);
-				System.out.println("Now Here");
+				currentPreviousNode = newNode;
 			} else if (currentPreviousNode != null && currentNextNode != null) { // adding to middle
 				currentNextNode.setPreviousNode(newNode);
 				currentPreviousNode.setNextNode(newNode);
+				currentPreviousNode = newNode;
 			}
-			currentPreviousNode = newNode;
 			currentPreviousIndex++;
 			operationCalled = 0;
 		}

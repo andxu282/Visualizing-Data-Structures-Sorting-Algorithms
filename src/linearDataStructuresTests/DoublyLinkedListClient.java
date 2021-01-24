@@ -13,8 +13,29 @@ public class DoublyLinkedListClient {
 			listIterator.add(i);
 		}
 		System.out.println(Arrays.toString(list.toArray()));
+
 		for (int i = 0; i < 10; i++) {
 			System.out.println(list.get(i));
 		}
+
+		System.out.println();
+		ListIterator<Integer> listIterator1 = list.listIterator();
+		for (int i = 0; i < 10; i++) {
+			System.out.println(Arrays.toString(list.toArray()));
+			listIterator1.add(i);
+		}
+
+		System.out.println();
+		System.out.println(Arrays.toString(list.toArray()));
+		System.out.println(list.size());
+
+		ListIterator<Integer> listIterator2 = list.listIterator(5);
+		for (int i = 0; i < 10; i++) {
+			listIterator2.add(i);
+		}
+
+		System.out.println();
+		System.out.println(Arrays.toString(list.toArray()));
+		System.out.println(list.size());
 	}
 }
