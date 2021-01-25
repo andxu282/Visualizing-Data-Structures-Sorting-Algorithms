@@ -283,8 +283,6 @@ public class HashSetImplementation<T> implements Set<T> {
 		protected int hashFunction(K key) {
 			double a = key.hashCode() * ((Math.sqrt(5) + 1) / 2.0 - 1);
 			int hashCode = ((int) Math.floor(this.size() * (key.hashCode() * (a - Math.floor(a))))) % this.size();
-			System.out.print(key + " ");
-			System.out.println(hashCode);
 			return hashCode;
 		}
 
@@ -297,8 +295,6 @@ public class HashSetImplementation<T> implements Set<T> {
 			if (this.calculateLoadingFactor() < this.loadingFactor) {
 				return;
 			}
-
-			System.out.println("Resizing");
 			// save the old hash table
 			DoublyLinkedList<Tuple<K, V>>[] oldHashTable = this.hashTable;
 			// set the new hash table to be one of double the size

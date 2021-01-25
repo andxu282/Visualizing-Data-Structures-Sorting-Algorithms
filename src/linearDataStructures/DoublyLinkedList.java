@@ -9,18 +9,20 @@ public class DoublyLinkedList<T> implements List<T> {
 	private Node<T> head;
 
 	public DoublyLinkedList() {
-		this.head = null;
+		this.head = new Node<T>();
+		this.head.setPreviousNode(new Node<T>());
+		this.head.setNextNode(new Node<T>());
 	}
 
 	public DoublyLinkedList(T data) {
-		this.head = new Node<T>(data, null, null);
+		this.head = new Node<T>(data, new Node<T>(), new Node<T>());
 	}
 
 	@Override
 	public int size() { // tested
 		Node<T> currentNode = this.head;
 		int size = 0;
-		while (currentNode != null) {
+		while (!currentNode.isEmpty()) {
 			currentNode = currentNode.getNextNode();
 			size++;
 		}
@@ -29,7 +31,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@Override
 	public boolean isEmpty() { // tested
-		return head == null;
+		return this.head.isEmpty();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,7 +56,7 @@ public class DoublyLinkedList<T> implements List<T> {
 		Object[] listToArray = new Object[this.size()];
 		Node<T> currentNode = this.head;
 		int index = 0;
-		while (currentNode != null) {
+		while (!currentNode.isEmpty()) {
 			listToArray[index] = currentNode.getData();
 			index++;
 			currentNode = currentNode.getNextNode();
@@ -71,11 +73,12 @@ public class DoublyLinkedList<T> implements List<T> {
 			listToArray = a;
 			listToArray[size] = null;
 		}
-		ListIterator<T> iterator = this.listIterator();
+		Node<T> currentNode = this.head;
 		int index = 0;
-		while (iterator.hasNext()) {
-			listToArray[index] = iterator.next();
+		while (!currentNode.isEmpty()) {
+			listToArray[index] = currentNode.getData();
 			index++;
+			currentNode = currentNode.getNextNode();
 		}
 		return listToArray;
 	}
@@ -83,15 +86,15 @@ public class DoublyLinkedList<T> implements List<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean add(Object e) { // tested
-		if (this.head == null) {
-			this.head = new Node<T>((T) e, null, null);
+		if (this.head.isEmpty()) {
+			this.head = new Node<T>((T) e, new Node<T>(), new Node<T>());
 			return true;
 		}
 		Node<T> currentNode = this.head;
-		while (currentNode.getNextNode() != null) {
+		while (!currentNode.getNextNode().isEmpty()) {
 			currentNode = currentNode.getNextNode();
 		}
-		Node<T> newNode = new Node<T>((T) e, currentNode, null);
+		Node<T> newNode = new Node<T>((T) e, currentNode, new Node<T>());
 		currentNode.setNextNode(newNode);
 		return true;
 	}
@@ -100,20 +103,20 @@ public class DoublyLinkedList<T> implements List<T> {
 	@Override
 	public boolean remove(Object o) { // tested
 		Node<T> currentNode = head;
-		while (currentNode != null) {
+		while (!currentNode.isEmpty()) {
 			if (currentNode.getData().equals((T) o)) {
 				Node<T> previousNode = currentNode.getPreviousNode();
 				Node<T> nextNode = currentNode.getNextNode();
-				if (previousNode == null && nextNode != null) { // removing head
+				if (previousNode.isEmpty() && !nextNode.isEmpty()) { // removing head
 					head = nextNode;
 					nextNode.setPreviousNode(previousNode);
-				} else if (previousNode != null && nextNode == null) { // removing tail
+				} else if (!previousNode.isEmpty() && nextNode.isEmpty()) { // removing tail
 					previousNode.setNextNode(nextNode);
-				} else if (previousNode != null && nextNode != null) {
+				} else if (!previousNode.isEmpty() && !nextNode.isEmpty()) {
 					nextNode.setPreviousNode(previousNode);
 					previousNode.setNextNode(nextNode);
-				} else if (nextNode == null && previousNode == null) { // removing the only element
-					head = null;
+				} else if (nextNode.isEmpty() && previousNode.isEmpty()) { // removing the only element
+					this.head.clear();
 				}
 				return true;
 			}
@@ -144,7 +147,7 @@ public class DoublyLinkedList<T> implements List<T> {
 		// traverse to end of current list
 		Node<T> currentNode = head;
 		if (!this.isEmpty()) {
-			while (currentNode.getNextNode() != null) {
+			while (!currentNode.getNextNode().isEmpty()) {
 				currentNode = currentNode.getNextNode();
 			}
 		}
@@ -152,12 +155,12 @@ public class DoublyLinkedList<T> implements List<T> {
 		Iterator cIterator = c.iterator();
 		if (this.isEmpty()) {
 			if (cIterator.hasNext()) {
-				head = new Node<T>((T) cIterator.next(), null, null);
+				head = new Node<T>((T) cIterator.next(), new Node<T>(), new Node<T>());
 				currentNode = head;
 			}
 		}
 		while (cIterator.hasNext()) {
-			Node<T> addedNode = new Node<T>((T) cIterator.next(), currentNode, null);
+			Node<T> addedNode = new Node<T>((T) cIterator.next(), currentNode, new Node<T>());
 			currentNode.setNextNode(addedNode);
 			currentNode = addedNode;
 		}
@@ -172,10 +175,10 @@ public class DoublyLinkedList<T> implements List<T> {
 		}
 
 		// traverse to index
-		Node<T> previousNode = null;
-		Node<T> currentNode = head;
+		Node<T> previousNode = this.head.getPreviousNode();
+		Node<T> currentNode = this.head;
 		int currentIndex = 0;
-		while (currentNode != null && currentIndex < index) {
+		while (!currentNode.isEmpty() && currentIndex < index) {
 			previousNode = currentNode;
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
@@ -187,19 +190,19 @@ public class DoublyLinkedList<T> implements List<T> {
 		Iterator cIterator = c.iterator();
 		if (this.isEmpty()) {
 			if (cIterator.hasNext()) {
-				head = new Node<T>((T) cIterator.next(), null, null);
+				head = new Node<T>((T) cIterator.next(), new Node<T>(), new Node<T>());
 				nodeBefore = head;
 			}
 		}
 
 		while (cIterator.hasNext()) {
-			Node<T> addedNode = new Node<T>((T) cIterator.next(), nodeBefore, null);
-			if (nodeBefore != null) {
+			Node<T> addedNode = new Node<T>((T) cIterator.next(), nodeBefore, new Node<T>());
+			if (!nodeBefore.isEmpty()) {
 				nodeBefore.setNextNode(addedNode);
 			}
 			nodeBefore = addedNode;
 		}
-		if (nodeBefore != null) {
+		if (!nodeBefore.isEmpty()) {
 			nodeBefore.setNextNode(firstNodeAfter);
 		}
 		return true;
@@ -235,7 +238,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 	@Override
 	public void clear() { // tested
-		this.head = null;
+		this.head.clear();
 	}
 
 	@Override
@@ -263,7 +266,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 		int currentIndex = 0;
 		Node<T> currentNode = head;
-		while (currentNode != null && currentIndex < index) {
+		while (!currentNode.isEmpty() && currentIndex < index) {
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
@@ -277,26 +280,26 @@ public class DoublyLinkedList<T> implements List<T> {
 	@Override
 	public void add(int index, Object element) { // tested
 		if (this.isEmpty()) {
-			this.head = new Node<T>((T) element, null, null);
+			this.head = new Node<T>((T) element, new Node<T>(), new Node<T>());
 			return;
 		}
 
 		int currentIndex = 0;
-		Node<T> previousNode = null;
+		Node<T> previousNode = this.head.getPreviousNode();
 		Node<T> currentNode = this.head;
-		while (currentNode != null && currentIndex < index) {
+		while (!currentNode.isEmpty() && currentIndex < index) {
 			previousNode = currentNode;
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
 		Node<T> newNode = new Node<T>((T) element, previousNode, currentNode);
 
-		if (previousNode == null && currentNode != null) { // adding to head
-			head = newNode;
+		if (previousNode.isEmpty() && !currentNode.isEmpty()) { // adding to head
+			this.head = newNode;
 			currentNode.setPreviousNode(newNode);
-		} else if (previousNode != null && currentNode == null) { // adding to tail
+		} else if (!previousNode.isEmpty() && currentNode.isEmpty()) { // adding to tail
 			previousNode.setNextNode(newNode);
-		} else if (previousNode != null && currentNode != null) { // adding to middle
+		} else if (!previousNode.isEmpty() && !currentNode.isEmpty()) { // adding to middle
 			currentNode.setPreviousNode(newNode);
 			previousNode.setNextNode(newNode);
 		}
@@ -310,22 +313,22 @@ public class DoublyLinkedList<T> implements List<T> {
 
 		int currentIndex = 0;
 		Node<T> currentNode = head;
-		while (currentNode != null && currentIndex < index) {
+		while (!currentNode.isEmpty() && currentIndex < index) {
 			currentNode = currentNode.getNextNode();
 			currentIndex++;
 		}
 		Node<T> previousNode = currentNode.getPreviousNode();
 		Node<T> nextNode = currentNode.getNextNode();
-		if (previousNode == null && nextNode != null) { // removing head
+		if (previousNode.isEmpty() && !nextNode.isEmpty()) { // removing head
 			head = nextNode;
 			nextNode.setPreviousNode(previousNode);
-		} else if (previousNode != null && nextNode == null) { // removing tail
+		} else if (!previousNode.isEmpty() && nextNode.isEmpty()) { // removing tail
 			previousNode.setNextNode(nextNode);
-		} else if (previousNode != null && nextNode != null) {
+		} else if (!previousNode.isEmpty() && !nextNode.isEmpty()) {
 			nextNode.setPreviousNode(previousNode);
 			previousNode.setNextNode(nextNode);
-		} else if (nextNode == null && previousNode == null) { // removing the only element
-			head = null;
+		} else if (nextNode.isEmpty() && previousNode.isEmpty()) { // removing the only element
+			head.clear();
 		}
 		return currentNode.getData();
 	}
@@ -362,13 +365,12 @@ public class DoublyLinkedList<T> implements List<T> {
 	@Override
 	public ListIterator<T> listIterator() {
 		LinkedListIterator<T> listIterator;
-		if (this.head == null) {
+		if (this.head.isEmpty()) {
 			listIterator = new LinkedListIterator<T>();
-			this.head = listIterator.headOfIterator;
 		} else {
 			listIterator = new LinkedListIterator<T>(this.head, this.head);
-			this.head = listIterator.headOfIterator;
 		}
+		this.head = listIterator.headOfIterator;
 		return listIterator;
 	}
 
@@ -446,6 +448,13 @@ public class DoublyLinkedList<T> implements List<T> {
 			this.next = next;
 		}
 
+		void clear() {
+			this.data = null;
+		}
+
+		boolean isEmpty() {
+			return this.data == null;
+		}
 	}
 
 	private class LinkedListIterator<K> implements Iterator<K>, ListIterator<K> {
@@ -458,10 +467,14 @@ public class DoublyLinkedList<T> implements List<T> {
 
 		LinkedListIterator() {
 			headOfIterator = new Node<K>();
+			headOfIterator.setPreviousNode(new Node<K>());
+			headOfIterator.setNextNode(new Node<K>());
+			currentPreviousNode = headOfIterator.getPreviousNode();
+			currentNextNode = headOfIterator;
 		}
 
 		LinkedListIterator(Node<K> head, Node<K> node) {
-			if (head == null) {
+			if (head.isEmpty()) {
 				headOfIterator = new Node<K>();
 			} else {
 				headOfIterator = head;
@@ -472,7 +485,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 		@Override
 		public boolean hasNext() {
-			return currentNextNode != null;
+			return !currentNextNode.isEmpty();
 		}
 
 		@Override
@@ -491,7 +504,7 @@ public class DoublyLinkedList<T> implements List<T> {
 
 		@Override
 		public boolean hasPrevious() {
-			return currentPreviousNode != null;
+			return !currentPreviousNode.isEmpty();
 		}
 
 		@Override
@@ -534,20 +547,21 @@ public class DoublyLinkedList<T> implements List<T> {
 		@Override
 		public void add(K e) {
 			Node<K> newNode = new Node<K>(e, currentPreviousNode, currentNextNode);
-			if (currentPreviousNode == null && currentNextNode == null) { // creating new list
+			if (currentPreviousNode.isEmpty() && currentNextNode.isEmpty()) { // creating new list
 				this.headOfIterator.setData(e);
 				currentPreviousNode = this.headOfIterator;
-			} else if (currentPreviousNode == null && currentNextNode != null) { // adding to head
+				currentNextNode = this.headOfIterator.getNextNode();
+			} else if (currentPreviousNode.isEmpty() && !currentNextNode.isEmpty()) { // adding to head
 				Node<K> afterHead = new Node<K>(this.headOfIterator.getData(), currentNextNode,
 						this.headOfIterator.getNextNode());
 				this.headOfIterator.setNextNode(afterHead);
 				this.headOfIterator.setData(e);
 				currentNextNode = afterHead;
 				currentPreviousNode = this.headOfIterator;
-			} else if (currentPreviousNode != null && currentNextNode == null) { // adding to tail
+			} else if (!currentPreviousNode.isEmpty() && currentNextNode.isEmpty()) { // adding to tail
 				currentPreviousNode.setNextNode(newNode);
 				currentPreviousNode = newNode;
-			} else if (currentPreviousNode != null && currentNextNode != null) { // adding to middle
+			} else if (!currentPreviousNode.isEmpty() && !currentNextNode.isEmpty()) { // adding to middle
 				currentNextNode.setPreviousNode(newNode);
 				currentPreviousNode.setNextNode(newNode);
 				currentPreviousNode = newNode;
@@ -561,16 +575,51 @@ public class DoublyLinkedList<T> implements List<T> {
 			if (operationCalled == 0) {
 				return;
 			} else if (operationCalled == 1) {
-				currentPreviousNode.getPreviousNode().setNextNode(currentNextNode);
-				currentPreviousNode = currentPreviousNode.getPreviousNode();
+				if (currentPreviousNode.getPreviousNode().isEmpty() && currentNextNode.isEmpty()) {
+					this.headOfIterator.clear();
+				} else if (currentPreviousNode.getPreviousNode().isEmpty() && !currentNextNode.isEmpty()) { // removing
+																											// head
+					Node<K> afterNewHead = currentNextNode.getNextNode();
+					this.headOfIterator.setNextNode(afterNewHead);
+					this.headOfIterator.setData(currentNextNode.getData());
+					afterNewHead.setPreviousNode(this.headOfIterator);
+					currentNextNode = this.headOfIterator;
+					currentPreviousNode = new Node<K>();
+				} else if (!currentPreviousNode.getPreviousNode().isEmpty() && currentNextNode.isEmpty()) { // removing
+																											// tail
+					Node<K> newTail = currentPreviousNode.getPreviousNode();
+					newTail.setNextNode(new Node<K>());
+					currentPreviousNode = newTail;
+				} else if (!currentPreviousNode.getPreviousNode().isEmpty() && !currentNextNode.isEmpty()) { // removing
+																										// middle
+					Node<K> newPrevious = currentPreviousNode.getPreviousNode();
+					currentNextNode.setPreviousNode(newPrevious);
+					newPrevious.setNextNode(currentNextNode);
+					currentPreviousNode = newPrevious;
+				}
 				currentPreviousIndex--;
 				currentNextIndex--;
-				operationCalled = 0;
+
 			} else if (operationCalled == -1) {
-				currentPreviousNode.setNextNode(currentNextNode.getNextNode());
-				currentNextNode = currentNextNode.getNextNode();
-				operationCalled = 0;
+				if (currentPreviousNode.isEmpty() && currentNextNode.getNextNode().isEmpty()) {
+					this.headOfIterator.clear();
+				} else if (currentPreviousNode.isEmpty() && !currentNextNode.getNextNode().isEmpty()) { // removing head
+					Node<K> newHead = currentNextNode.getNextNode();
+					this.headOfIterator.setData(newHead.getData());
+					this.headOfIterator.setNextNode(newHead.getNextNode());
+					currentNextNode = newHead;
+				} else if (!currentPreviousNode.isEmpty() && currentNextNode.getNextNode().isEmpty()) { // removing tail
+					currentPreviousNode.setNextNode(new Node<K>());
+					currentNextNode = new Node<K>();
+				} else if (!currentPreviousNode.isEmpty() && !currentNextNode.getNextNode().isEmpty()) { // removing
+																											// middle
+					Node<K> newNext = currentNextNode.getNextNode();
+					newNext.setPreviousNode(currentPreviousNode);
+					currentPreviousNode.setNextNode(newNext);
+					currentNextNode = newNext;
+				}
 			}
+			operationCalled = 0;
 		}
 	}
 }
