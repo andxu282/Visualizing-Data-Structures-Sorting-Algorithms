@@ -65,8 +65,8 @@ class HashTableTest {
 		Set<String> keys = hashTable.keySet();
 		Set<String> javaKeys = javaHashTable.keySet();
 		Object[] javaKeyArray = javaKeys.toArray();
-
-		for (int i = 0; i < 1000; i++) {
+		assertEquals(keys.size(), javaKeyArray.length);
+		for (int i = 0; i < javaKeyArray.length; i++) {
 			assertEquals(true, keys.contains(javaKeyArray[i]));
 		}
 	}
@@ -85,8 +85,8 @@ class HashTableTest {
 		Collection<Integer> values = hashTable.values();
 		Collection<Integer> javaValues = javaHashTable.values();
 		Object[] javaValueArray = javaValues.toArray();
-
-		for (int i = 0; i < 1000; i++) {
+		assertEquals(values.size(), javaValueArray.length);
+		for (int i = 0; i < javaValueArray.length; i++) {
 			assertEquals(true, values.contains(javaValueArray[i]));
 		}
 	}
@@ -105,8 +105,8 @@ class HashTableTest {
 		Collection<Integer> values = hashTable.values();
 		Collection<Integer> javaValues = javaHashTable.values();
 		Object[] javaValueArray = javaValues.toArray();
-
-		for (int i = 0; i < 1000; i++) {
+		assertEquals(values.size(), javaValueArray.length);
+		for (int i = 0; i < javaValueArray.length; i++) {
 			assertEquals(true, values.contains(javaValueArray[i]));
 		}
 	}

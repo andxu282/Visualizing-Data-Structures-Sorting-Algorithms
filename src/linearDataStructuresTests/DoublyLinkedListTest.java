@@ -463,7 +463,7 @@ class DoublyLinkedListTest {
 	}
 
 	@Test
-	void testListIterator() {
+	void testListIteratorIterate() {
 		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
 		LinkedList<Integer> javaList = new LinkedList<Integer>();
 		Random r = new Random();
@@ -482,7 +482,7 @@ class DoublyLinkedListTest {
 	}
 
 	@Test
-	void testListIterator1() {
+	void testListIteratorAdd() {
 		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
 		LinkedList<Integer> javaList = new LinkedList<Integer>();
 		Random r = new Random();
@@ -495,6 +495,36 @@ class DoublyLinkedListTest {
 		}
 
 		for (int i = 0; i < 1000; i++) {
+			assertEquals(javaList.get(i), list.get(i));
+		}
+	}
+
+	@Test
+	void testListIteratorRemove() {
+		DoublyLinkedList<Integer> list = new DoublyLinkedList<Integer>();
+		LinkedList<Integer> javaList = new LinkedList<Integer>();
+		Random r = new Random();
+		ListIterator<Integer> listIterator = list.listIterator();
+		ListIterator<Integer> javaListIterator = javaList.listIterator();
+		for (int i = 0; i < 1000; i++) {
+			int num = r.nextInt(100);
+			listIterator.add(num);
+			javaListIterator.add(num);
+		}
+
+		for (int i = 0; i < 100; i++) {
+			int limit = r.nextInt(1001 - i);
+			ListIterator<Integer> listIterator1 = list.listIterator();
+			ListIterator<Integer> javaListIterator1 = javaList.listIterator();
+			for (int j = 0; j < limit; j++) {
+				listIterator1.next();
+				javaListIterator1.next();
+			}
+			listIterator1.remove();
+			javaListIterator1.remove();
+		}
+
+		for (int i = 0; i < 900; i++) {
 			assertEquals(javaList.get(i), list.get(i));
 		}
 	}

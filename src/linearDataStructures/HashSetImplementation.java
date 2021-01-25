@@ -19,7 +19,7 @@ public class HashSetImplementation<T> implements Set<T> {
 	 */
 	@Override
 	public int size() {
-		return set.size();
+		return set.getNumEntryPairs();
 	}
 
 	/**
@@ -318,6 +318,15 @@ public class HashSetImplementation<T> implements Set<T> {
 					this.put(key, value);
 				}
 			}
+		}
+
+		/**
+		 * Returns the number of entry pairs entered.
+		 * 
+		 * @return number of entry pairs
+		 */
+		public int getNumEntryPairs() {
+			return this.numValues;
 		}
 
 		/**
