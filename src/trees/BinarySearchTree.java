@@ -1,7 +1,5 @@
 package trees;
 
-import java.util.NoSuchElementException;
-
 public class BinarySearchTree<T extends Comparable<T>> {
 	/**
 	 * Invariants: All elements greater than to the current node is on the right,
@@ -36,17 +34,22 @@ public class BinarySearchTree<T extends Comparable<T>> {
 		return this.numValues;
 	}
 
-	public void insert(T value) {
+	public boolean insert(T value) {
+		if (this.find(value)) {
+			return false;
+		}
+		numValues++;
 		this.root = insert(this.root, value);
-		return;
+		return true;
 	}
 
-	public void remove(T value) {
-		if (numValues == 0) {
-			throw new NoSuchElementException();
+	public boolean remove(T value) {
+		if (!this.find(value)) {
+			return false;
 		}
+		numValues--;
 		this.root = remove(this.root, value);
-		return;
+		return true;
 	}
 
 	public boolean find(T value) {
@@ -74,7 +77,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
 	private Node<T> insert(Node<T> node, T value) {
 		if (node == null) {
 			node = new Node<T>(value);
-			numValues++;
 			return node;
 		} else if (node.value.compareTo(value) > 0) {
 			node.left = insert(node.left, value);
@@ -101,39 +103,31 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
 	private Node<T> remove(Node<T> node, T value) {
 		if (node == null) {
-			return null;
-		} else if (node.value.compareTo(value) == 0) {
-			numValues--;
-			if (node.left == null && node.right == null) {
-				node = null;
-			} else if (node.left == null && node.right != null) {
-				node = node.right;
-			} else if (node.left != null && node.right == null) {
-				node = node.left;
-			} else if (node.left != null && node.right != null) {
-				Node<T> currentParent = node.left;
-				Node<T> currentNode = node.left;
-				int i = 0;
-				while (currentNode.right != null) {
-					currentParent = currentNode;
-					currentNode = currentNode.right;
-					i++;
-				}
-				if (i == 0) {
-					currentNode.right = node.right;
-				} else {
-					currentNode.left = node.left;
-					currentNode.right = node.right;
-					currentParent.right = null;
-				}
-				node = currentNode;
-			}
-		} else if (node.value.compareTo(value) > 0) {
+			return node;
+		}
+		if (node.value.compareTo(value) > 0) {
 			node.left = remove(node.left, value);
-		} else {
+		} else if (node.value.compareTo(value) < 0) {
 			node.right = remove(node.right, value);
+		} else {
+			if (node.left == null) {
+				return node.right;
+			} else if (node.right == null) {
+				return node.left;
+			}
+			node.value = minValue(node.right);
+			node.right = remove(node.right, node.value);
 		}
 		return node;
+	}
+
+	private T minValue(Node<T> node) {
+		T minv = node.value;
+		while (node.left != null) {
+			minv = node.left.value;
+			node = node.left;
+		}
+		return minv;
 	}
 
 	private void traverseInOrder(Node<T> node) {

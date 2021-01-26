@@ -68,60 +68,56 @@ class BinarySearchTreeTest {
 		for (int i = 0; i < 7; i++) {
 			assertEquals(true, tree.find(i));
 		}
-		tree.remove(1);
+		tree.remove(3);
 		tree.remove(2);
-		tree.remove(6);
-		assertEquals(4, tree.size());
+		assertEquals(5, tree.size());
 	}
 
 	@Test
 	void testAddRemove() {
-		BinarySearchTree<Integer> tree = new BinarySearchTree<Integer>();
-		Random r = new Random();
-		Set<Integer> hashSet = new HashSetImplementation<Integer>();
-		Set<Integer> hashSet1 = new HashSet<Integer>();
-		for (int i = 0; i < 50; i++) {
-			int num = r.nextInt(1000);
-			hashSet.add(num);
-			hashSet1.add(num);
-		}
-		Object[] nums = hashSet.toArray();
-		Object[] nums1 = hashSet1.toArray();
-		ArrayList<Integer> numsList = new ArrayList<Integer>();
-		ArrayList<Integer> numsList1 = new ArrayList<Integer>();
-		for (int i = 0; i < nums.length; i++) {
-			tree.insert((Integer) nums[i]);
-			numsList.add((Integer) nums[i]);
-			numsList1.add((Integer) nums1[i]);
+		for (int j = 0; j < 100; j++) {
+			BinarySearchTree<Integer> tree = new BinarySearchTree<Integer>();
+			Random r = new Random();
+			Set<Integer> hashSet = new HashSetImplementation<Integer>();
+			Set<Integer> hashSet1 = new HashSet<Integer>();
+			for (int i = 0; i < 50; i++) {
+				int num = r.nextInt(1000);
+				hashSet.add(num);
+				hashSet1.add(num);
+			}
+			Object[] nums = hashSet.toArray();
+			Object[] nums1 = hashSet1.toArray();
+			ArrayList<Integer> numsList = new ArrayList<Integer>();
+			ArrayList<Integer> numsList1 = new ArrayList<Integer>();
+			for (int i = 0; i < nums.length; i++) {
+				tree.insert((Integer) nums[i]);
+				numsList.add((Integer) nums[i]);
+				numsList1.add((Integer) nums1[i]);
+			}
+
+			for (int i = 0; i < nums.length; i++) {
+				assertEquals(true, tree.find((Integer) nums[i]));
+				assertEquals(true, tree.find((Integer) nums1[i]));
+			}
+
+			ArrayList<Integer> numsListCopy = new ArrayList<Integer>(numsList);
+			Collections.sort(numsListCopy);
+
+			Collections.shuffle(numsList);
+			for (int i = 0; i < numsList.size() / 2; i++) {
+				tree.remove(numsList.get(i));
+				numsListCopy.remove(numsList.get(i));
+			}
+
+			for (int i = 0; i < numsList.size() / 2; i++) {
+				assertEquals(false, tree.find(numsList.get(i)));
+			}
+
+			for (int i = (numsList.size() / 2) + 1; i < numsList.size(); i++) {
+				assertEquals(true, tree.find(numsList.get(i)));
+			}
 		}
 
-		for (int i = 0; i < nums.length; i++) {
-			assertEquals(true, tree.find((Integer) nums[i]));
-			assertEquals(true, tree.find((Integer) nums1[i]));
-		}
-
-		System.out.println("HashSet Size: " + numsList.size());
-		System.out.println("JavaHashSet Size: " + numsList1.size());
-		System.out.println("Tree Size: " + tree.size());
-		System.out.println();
-
-		Collections.shuffle(numsList);
-		for (int i = 0; i < numsList.size() / 2; i++) {
-			tree.remove(numsList.get(i));
-		}
-
-		for (int i = 0; i < numsList.size() / 2; i++) {
-			assertEquals(false, tree.find(numsList.get(i)));
-		}
-		System.out.println("HashSet: " + numsList);
-		System.out.println("HashSet Size / 2: " + numsList.size() / 2);
-
-		System.out.print("Tree: ");
-		tree.traverseInOrder();
-		System.out.println("Tree Size: " + tree.size());
-		for (int i = (numsList.size() / 2) + 1; i < numsList.size(); i++) {
-			assertEquals(true, tree.find(numsList.get(i)));
-		}
 
 	}
 
