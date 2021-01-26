@@ -10,112 +10,136 @@ import java.util.NoSuchElementException;
  * @author andrew
  *
  */
-public class Heap {
-	private int[] heapContents = new int[8];
+public class Heap<T extends Comparable<T>> {
+	private Object[] heapContents = new Object[2049];
+
+	private int numValues = 0;
 
 	public Heap() {
 
 	}
 
 	public Heap(int size) {
-		heapContents = new int[size + 1];
+		this.heapContents = new Object[size + 1];
 	}
 
-	private void heapifyDown() {
-		int k = 1;
-		while (k < heapContents[0]) {
-			int p1 = 2 * k;
-			int p2 = 2 * k + 1;
-			int p;
-			int valToHeapifyDown = heapContents[k];
-			if (heapContents[p1] > heapContents[p2]) {
-				p = p1;
-			} else {
-				p = p2;
-			}
-			if (heapContents[p] > valToHeapifyDown) {
-				heapContents[k] = heapContents[p];
-				heapContents[p] = valToHeapifyDown;
-				k = p;
-			} else {
-				break;
-			}
-		}
+
+	public Object[] getContents() {
+		return Arrays.copyOfRange(this.heapContents, 1, numValues + 1);
 	}
 
-	public int[] getContents() {
-		return heapContents;
-	}
 
-	private void heapifyUp() {
-		int k = heapContents[0];
-		while (k > 1) {
-			int p = k / 2;
-			int valToHeapUp = heapContents[k];
-			if (heapContents[p] < heapContents[k]) {
-				heapContents[k] = heapContents[p];
-				heapContents[p] = valToHeapUp;
-				k = p;
-			} else {
-				break;
-			}
-		}
-	}
 
-	public void add(int newValue) {
+	public void add(T newValue) {
 		if (!this.hasSpace()) {
-			throw new OutOfMemoryError();
+			return;
 		}
-		heapContents[heapContents[0] + 1] = newValue;
-		heapContents[0] += 1;
+		this.heapContents[numValues + 1] = newValue;
 		heapifyUp();
+		numValues++;
 	}
 
-	public int pop() {
+	@SuppressWarnings("unchecked")
+	public T pop() {
 		if (this.isEmpty()) {
 			throw new NoSuchElementException();
 		}
-		int popped = heapContents[1];
-		heapContents[1] = heapContents[heapContents[0]];
-		heapContents[heapContents[0]] = 0;
-		heapContents[0] -= 1;
+		T poppedValue = (T) this.heapContents[1];
+		this.heapContents[1] = this.heapContents[numValues];
+		this.heapContents[numValues] = null;
 		heapifyDown();
-		return popped;
+		numValues--;
+		return poppedValue;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void heapifyDown() {
+		int smallValueIndex = 1;
+		int leftChildIndex = leftChildIndex(smallValueIndex);
+		int rightChildIndex = rightChildIndex(smallValueIndex);
+		T smallValue = (T) this.heapContents[smallValueIndex];
+		T leftChild = (T) this.heapContents[leftChildIndex];
+		T rightChild = (T) this.heapContents[rightChildIndex];
+		if (leftChild == null) {
+			return;
+		} else if (rightChild == null) {
+			if (leftChild.compareTo(smallValue) > 0) {
+				this.swapNodes(smallValueIndex, leftChildIndex);
+			}
+			return;
+		}
+		while (smallValue.compareTo(leftChild) < 0 || smallValue.compareTo(rightChild) < 0) {
+			if (leftChild.compareTo(rightChild) > 0) {
+				this.swapNodes(smallValueIndex, leftChildIndex);
+				smallValueIndex = leftChildIndex;
+				leftChildIndex = leftChildIndex(smallValueIndex);
+				rightChildIndex = rightChildIndex(smallValueIndex);
+				smallValue = (T) this.heapContents[smallValueIndex];
+				leftChild = (T) this.heapContents[leftChildIndex];
+				rightChild = (T) this.heapContents[rightChildIndex];
+			} else if (leftChild.compareTo(rightChild) < 0) {
+				this.swapNodes(smallValueIndex, rightChildIndex);
+				smallValueIndex = rightChildIndex;
+				leftChildIndex = leftChildIndex(smallValueIndex);
+				rightChildIndex = rightChildIndex(smallValueIndex);
+				smallValue = (T) this.heapContents[smallValueIndex];
+				leftChild = (T) this.heapContents[leftChildIndex];
+				rightChild = (T) this.heapContents[rightChildIndex];
+			}
+			if (leftChild == null) {
+				return;
+			} else if (rightChild == null) {
+				if (leftChild.compareTo(smallValue) > 0) {
+					this.swapNodes(smallValueIndex, leftChildIndex);
+				}
+				return;
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void heapifyUp() {
+		int newValueIndex = numValues + 1;
+		int parentIndex = parentIndex(newValueIndex);
+		T newValue = (T) this.heapContents[newValueIndex];
+		T parent = (T) this.heapContents[parentIndex];
+		if (parent == null) {
+			return;
+		}
+		while (newValue.compareTo(parent) > 0 && newValueIndex > 1) {
+			this.swapNodes(newValueIndex, parentIndex);
+			newValueIndex = parentIndex;
+			parentIndex = parentIndex(parentIndex);
+			newValue = (T) this.heapContents[newValueIndex];
+			parent = (T) this.heapContents[parentIndex];
+		}
+	}
+
+	private int leftChildIndex(int parentIndex) {
+		return 2 * parentIndex;
+	}
+
+	private int rightChildIndex(int parentIndex) {
+		return 2 * parentIndex + 1;
+	}
+
+	private int parentIndex(int childIndex) {
+		return childIndex / 2;
 	}
 
 	private boolean hasSpace() {
-		if (heapContents[0] == heapContents.length - 1) {
-			return false;
-		}
-		return true;
+		return numValues < this.heapContents.length;
 	}
 
 	private boolean isEmpty() {
-		if (heapContents[0] == 0) {
-			return true;
-		}
-		return false;
+		return numValues == 0;
 	}
 
-	public static void main(String[] args) {
-		Heap heap = new Heap();
-		heap.add(25);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.add(3);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.add(20);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.add(1);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.add(2);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.add(17);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.add(23);
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.pop();
-		System.out.println(Arrays.toString(heap.getContents()));
-		heap.pop();
-		System.out.println(Arrays.toString(heap.getContents()));
+	@SuppressWarnings("unchecked")
+	private void swapNodes(int index1, int index2) {
+		T value1 = (T) this.heapContents[index1];
+		T value2 = (T) this.heapContents[index2];
+		this.heapContents[index2] = value1;
+		this.heapContents[index1] = value2;
 	}
 }

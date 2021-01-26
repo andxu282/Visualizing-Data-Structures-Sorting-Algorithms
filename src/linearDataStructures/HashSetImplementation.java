@@ -55,7 +55,7 @@ public class HashSetImplementation<T> implements Set<T> {
 	 */
 	@Override
 	public Object[] toArray() {
-		Collection<T> setValues = set.values();
+		Collection<T> setValues = set.keys();
 		return setValues.toArray();
 	}
 
@@ -65,7 +65,7 @@ public class HashSetImplementation<T> implements Set<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object[] toArray(Object[] a) {
-		Collection<T> setValues = set.values();
+		Collection<T> setValues = set.keys();
 		return setValues.toArray(a);
 	}
 
@@ -235,6 +235,8 @@ public class HashSetImplementation<T> implements Set<T> {
 		@SuppressWarnings("unchecked")
 		protected DoublyLinkedList<Tuple<K, V>>[] hashTable = new DoublyLinkedList[2048];
 
+		private DoublyLinkedList<K> keys = new DoublyLinkedList<K>();
+
 		/**
 		 * Total number of key value pairs this table holds.
 		 */
@@ -283,6 +285,7 @@ public class HashSetImplementation<T> implements Set<T> {
 		protected int hashFunction(K key) {
 			double a = key.hashCode() * ((Math.sqrt(5) + 1) / 2.0 - 1);
 			int hashCode = ((int) Math.floor(this.size() * (key.hashCode() * (a - Math.floor(a))))) % this.size();
+			hashCode = Math.abs(hashCode);
 			return hashCode;
 		}
 
@@ -432,6 +435,7 @@ public class HashSetImplementation<T> implements Set<T> {
 			if (hashedLinkedList == null) {
 				hashTable[hashedIndex] = new DoublyLinkedList<Tuple<K, V>>(new Tuple<K, V>(key, value));
 				this.numValues++;
+				keys.add(key);
 				this.resize();
 				return null;
 			}
@@ -450,6 +454,7 @@ public class HashSetImplementation<T> implements Set<T> {
 			// otherwise, we've reached the end of the linked list, and simply add a new
 			// node to the list
 			listIterator.add(new Tuple<K, V>(key, value));
+			keys.add(key);
 			this.numValues++;
 			this.resize();
 			// no old value found, so return null
@@ -481,6 +486,7 @@ public class HashSetImplementation<T> implements Set<T> {
 				V currentValue = keyValuePair.getValue();
 				// if there's a match, remove this node from the linked list
 				if (currentKey.equals(key)) {
+					keys.remove(key);
 					listIterator.remove();
 					this.numValues--;
 					// return the removed value
@@ -516,6 +522,14 @@ public class HashSetImplementation<T> implements Set<T> {
 		public void clear() {
 			int size = this.size();
 			hashTable = new DoublyLinkedList[size];
+			keys.clear();
+		}
+
+		/**
+		 * Returns all keys
+		 */
+		public DoublyLinkedList<K> keys() {
+			return this.keys;
 		}
 
 		/**
