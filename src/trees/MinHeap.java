@@ -16,10 +16,6 @@ public class MinHeap<T extends Comparable<T>> extends Heap<T> {
 		super(size);
 	}
 
-	public MinHeap(Object[] contents) {
-		super(contents);
-	}
-
 	@Override
 	protected boolean swapCondition(T value1, T value2) {
 		return value1.compareTo(value2) < 0;

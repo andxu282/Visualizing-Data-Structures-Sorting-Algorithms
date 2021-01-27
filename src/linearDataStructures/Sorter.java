@@ -1,6 +1,7 @@
 package linearDataStructures;
 
-import trees.MaxHeap;
+import trees.Heap;
+import trees.MinHeap;
 
 public class Sorter<T extends Comparable<T>> {
 
@@ -50,7 +51,14 @@ public class Sorter<T extends Comparable<T>> {
 	}
 
 	public void heapSort(T[] arr) {
-		MaxHeap<T> heap = new MaxHeap<T>();
+		Heap<T> heap = new MinHeap<T>();
+		for (int i = 0; i < arr.length; i++) {
+			heap.add(arr[i]);
+		}
+
+		for (int i = 0; i < arr.length; i++) {
+			arr[i] = heap.pop();
+		}
 	}
 
 	public void quickSort(T[] arr) {

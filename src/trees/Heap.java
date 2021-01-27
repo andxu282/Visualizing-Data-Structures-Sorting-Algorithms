@@ -16,11 +16,6 @@ public abstract class Heap<T extends Comparable<T>> {
 		this.heapContents = new Object[size + 1];
 	}
 
-	public Heap(Object[] contents) {
-		heapContents = contents;
-		numValues += contents.length;
-	}
-
 	public Object[] getContents() {
 		return Arrays.copyOfRange(this.heapContents, 1, numValues + 1);
 	}
@@ -103,12 +98,15 @@ public abstract class Heap<T extends Comparable<T>> {
 		if (parent == null) {
 			return;
 		}
-		while (newValue.compareTo(parent) > 0 && newValueIndex > 1) {
+		while (swapCondition(newValue, parent) && newValueIndex > 1) {
 			this.swapNodes(newValueIndex, parentIndex);
 			newValueIndex = parentIndex;
 			parentIndex = parentIndex(parentIndex);
 			newValue = (T) this.heapContents[newValueIndex];
 			parent = (T) this.heapContents[parentIndex];
+			if (parent == null) {
+				return;
+			}
 		}
 	}
 

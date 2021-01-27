@@ -16,10 +16,6 @@ public class MaxHeap<T extends Comparable<T>> extends Heap<T> {
 		super(size);
 	}
 
-	public MaxHeap(Object[] contents) {
-		super(contents);
-	}
-
 	@Override
 	protected boolean swapCondition(T value1, T value2) {
 		return value1.compareTo(value2) > 0;
