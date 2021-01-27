@@ -3,17 +3,10 @@ package trees;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-/**
- * An implementation of a max heap. Index 0 represents how many real values are
- * stored.
- * 
- * @author andrew
- *
- */
-public class Heap<T extends Comparable<T>> {
-	private Object[] heapContents = new Object[2049];
+public abstract class Heap<T extends Comparable<T>> {
+	protected Object[] heapContents = new Object[2049];
 
-	private int numValues = 0;
+	protected int numValues = 0;
 
 	public Heap() {
 
@@ -23,12 +16,14 @@ public class Heap<T extends Comparable<T>> {
 		this.heapContents = new Object[size + 1];
 	}
 
+	public Heap(Object[] contents) {
+		heapContents = contents;
+		numValues += contents.length;
+	}
 
 	public Object[] getContents() {
 		return Arrays.copyOfRange(this.heapContents, 1, numValues + 1);
 	}
-
-
 
 	public void add(T newValue) {
 		if (!this.hasSpace()) {
@@ -52,8 +47,10 @@ public class Heap<T extends Comparable<T>> {
 		return poppedValue;
 	}
 
+	protected abstract boolean swapCondition(T value1, T value2);
+
 	@SuppressWarnings("unchecked")
-	private void heapifyDown() {
+	protected void heapifyDown() {
 		int smallValueIndex = 1;
 		int leftChildIndex = leftChildIndex(smallValueIndex);
 		int rightChildIndex = rightChildIndex(smallValueIndex);
@@ -63,13 +60,13 @@ public class Heap<T extends Comparable<T>> {
 		if (leftChild == null) {
 			return;
 		} else if (rightChild == null) {
-			if (leftChild.compareTo(smallValue) > 0) {
+			if (swapCondition(leftChild, smallValue)) {
 				this.swapNodes(smallValueIndex, leftChildIndex);
 			}
 			return;
 		}
-		while (smallValue.compareTo(leftChild) < 0 || smallValue.compareTo(rightChild) < 0) {
-			if (leftChild.compareTo(rightChild) > 0) {
+		while (swapCondition(leftChild, smallValue) || swapCondition(rightChild, smallValue)) {
+			if (swapCondition(leftChild, rightChild)) {
 				this.swapNodes(smallValueIndex, leftChildIndex);
 				smallValueIndex = leftChildIndex;
 				leftChildIndex = leftChildIndex(smallValueIndex);
@@ -77,7 +74,7 @@ public class Heap<T extends Comparable<T>> {
 				smallValue = (T) this.heapContents[smallValueIndex];
 				leftChild = (T) this.heapContents[leftChildIndex];
 				rightChild = (T) this.heapContents[rightChildIndex];
-			} else if (leftChild.compareTo(rightChild) < 0) {
+			} else if (!swapCondition(leftChild, rightChild)) {
 				this.swapNodes(smallValueIndex, rightChildIndex);
 				smallValueIndex = rightChildIndex;
 				leftChildIndex = leftChildIndex(smallValueIndex);
@@ -89,7 +86,7 @@ public class Heap<T extends Comparable<T>> {
 			if (leftChild == null) {
 				return;
 			} else if (rightChild == null) {
-				if (leftChild.compareTo(smallValue) > 0) {
+				if (swapCondition(leftChild, smallValue)) {
 					this.swapNodes(smallValueIndex, leftChildIndex);
 				}
 				return;
@@ -98,7 +95,7 @@ public class Heap<T extends Comparable<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void heapifyUp() {
+	protected void heapifyUp() {
 		int newValueIndex = numValues + 1;
 		int parentIndex = parentIndex(newValueIndex);
 		T newValue = (T) this.heapContents[newValueIndex];
@@ -115,28 +112,28 @@ public class Heap<T extends Comparable<T>> {
 		}
 	}
 
-	private int leftChildIndex(int parentIndex) {
+	protected int leftChildIndex(int parentIndex) {
 		return 2 * parentIndex;
 	}
 
-	private int rightChildIndex(int parentIndex) {
+	protected int rightChildIndex(int parentIndex) {
 		return 2 * parentIndex + 1;
 	}
 
-	private int parentIndex(int childIndex) {
+	protected int parentIndex(int childIndex) {
 		return childIndex / 2;
 	}
 
-	private boolean hasSpace() {
+	protected boolean hasSpace() {
 		return numValues < this.heapContents.length;
 	}
 
-	private boolean isEmpty() {
+	protected boolean isEmpty() {
 		return numValues == 0;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void swapNodes(int index1, int index2) {
+	protected void swapNodes(int index1, int index2) {
 		T value1 = (T) this.heapContents[index1];
 		T value2 = (T) this.heapContents[index2];
 		this.heapContents[index2] = value1;
