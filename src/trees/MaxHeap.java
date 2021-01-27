@@ -24,4 +24,5 @@ public class MaxHeap<T extends Comparable<T>> extends Heap<T> {
 	protected boolean swapCondition(T value1, T value2) {
 		return value1.compareTo(value2) > 0;
 	}
+
 }
