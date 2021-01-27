@@ -2,8 +2,6 @@ package treesTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 
 import trees.MaxHeap;
@@ -57,7 +55,6 @@ class HeapTest {
 		heap.add(17);
 		heap.add(23);
 		Object[] heapArray = heap.getContents();
-		System.out.println(Arrays.toString(heapArray));
 		assertEquals(1, heapArray[0]);
 		assertEquals(17, heapArray[2]);
 		assertEquals(20, heapArray[5]);
